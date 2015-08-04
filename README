@@ -1,11 +1,15 @@
-IMPLEMENTATION OF THE MASS EXODUS GENERATIVE MODEL.
+The original MassExodus code was downloaded from http://www.snl.salk.edu/~navlakha/mass_exodus/
+This repo is a direct modification of that original code. We are adding argument parser, additional options, functionality and tweaks for research purposes only.
 
+
+IMPLEMENTATION OF THE MASS EXODUS GENERATIVE MODEL.
 Please cite: S. Navlakha, C. Faloutsos, and Z. Bar-Joseph. MassExodus: Modeling evolving networks in harsh environments. To appear in Data Mining and Knowledge Discovery, 2015.
 
-For questions: navlakha@salk.edu
+1. To run the model with n=1000, qsteal=0.3, qcon=0.8, and beta=0.03 with 1000 iterations
+    ./mass_exodus.py -n 1000 -s 0.3 -c 0.8 -b 0.03
 
+This will also output statistics of each network at each time step (to standard out) and the final network (override default with -o)
 
-1. To run the model with n=1000, qsteal=0.3, qcon=0.8, and beta=0.03:
-    ./mass_exodus.py 1000 0.3 0.8 0.03
+2. See available options
+    ./mass_exodus.py -h
 
-This will also output statistics of each network at each time step and the final network.

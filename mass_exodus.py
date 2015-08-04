@@ -4,14 +4,16 @@ from __future__ import division
 import networkx as nx
 import random,sys,time
 import features as F
+import argparse
+
+
 
 """ Runs the SIR bursty node loss model using the duplication growth process. """ 
 
 random.seed(10301949)
 
-T = 4000 # number of epochs. Assumes n=1000.
 
-def doit(n,qmod,qcon,beta):
+def doit(n,qmod,qcon,beta,T,outfile):
     G = nx.Graph()
 
     # Nodes that have gone through a DMC iteration and have not been burned.
@@ -108,22 +110,45 @@ def doit(n,qmod,qcon,beta):
     print "# Components\t%s" %(comps.strip())
 
     # Print the final network as well.
-    out = open("massexodus-%i-%.1f-%.1f-%.2f.graph" %(n,qmod,qcon,beta),"w")
-    out.write("#nodes=%i\n#edges=%i\n#qmod=%.1f\n#qcon=%.1f\n#beta=%.2f\n" %(n,G.size(),qmod,qcon,beta))
-    out.write("#comps=%i\n#isolates=%i\n" %(nx.number_connected_components(G),len(nx.isolates(G))))
+    out = open(outfile,"w")
+    #TODO: write header optionally
+#    out.write("#nodes=%i\n#edges=%i\n#qmod=%.1f\n#qcon=%.1f\n#beta=%.2f\n" %(n,G.size(),qmod,qcon,beta))
+#    out.write("#comps=%i\n#isolates=%i\n" %(nx.number_connected_components(G),len(nx.isolates(G))))
     for u,v in G.edges_iter(): out.write("%s\t%s\n" %(u,v))
     for u in nx.isolates(G): out.write("%s\t%s\n" %(u,u))       
     out.close()
 
 def main():
+    ## Parse options
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-n', '--nnodes', type=int, help='number of nodes', default=100)
+    parser.add_argument('-s', '--qsteal', type=float, help='prob of stealing an edge, btw 0-1', default=0.3)
+    parser.add_argument('-c', '--qcon', type=float, help='prob of connecting to a new node, btw 0-1', default=0.8)
+    parser.add_argument('-b', '--beta', type=float, help='harshness parameter, btw 0-1', default=0.03)
+    parser.add_argument('-t', '--niter', type=int, help='number of iterations', default=1000)
+    parser.add_argument('-o', '--outfile', help='path to file to save graph')
+    args = parser.parse_args()
+
+    n    = args.nnodes
+    qmod = args.qsteal # same as qsteal.
+    qcon = args.qcon
+    beta = args.beta
+    T    = args.niter
+    if args.outfile is None:
+        outfile = "massexodus-%i-%.1f-%.1f-%.2f.graph" %(n,qmod,qcon,beta)
+    else:
+        outfile = args.outfile
+
+    print outfile
+
     start = time.time()
 
-    n = int(sys.argv[1])
-    qmod = float(sys.argv[2]) # same as qsteal.
-    qcon = float(sys.argv[3])
-    beta = float(sys.argv[4])
+#    n = int(sys.argv[1])
+#    qmod = float(sys.argv[2]) # same as qsteal.
+#    qcon = float(sys.argv[3])
+#    beta = float(sys.argv[4])
 
-    doit(n,qmod,qcon,beta)
+    doit(n,qmod,qcon,beta,T,outfile)
 
     tot_time = (time.time()-start)/60
     print "# Time to run: %.3f (mins)" %(tot_time)
