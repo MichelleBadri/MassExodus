@@ -12,4 +12,3 @@ This will also output statistics of each network at each time step (to standard 
 
 2. See available options
     ./mass_exodus.py -h
-
